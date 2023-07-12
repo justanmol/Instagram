@@ -3,8 +3,7 @@ class CommentsController < ApplicationController
 
   def create
     post = Post.find(params[:post_id])
-    # comment = @current_user.comments.new(comment_params.merge(post: post))
-        comment = @current_user.post.comments.new(params[:content]))
+    comment = post.comments.new(comment_params)
     if comment.save
       render json: comment, status: :created
     else
@@ -12,9 +11,18 @@ class CommentsController < ApplicationController
     end
   end
 
-  private
+  def destroy
+  	comment = Comment.find(params[:id])
+  	if comment
+  		comment.destroy
+  		render json: {message: "Destroy Successfully"}
+  	else
+  		render json: {error: "r "}
+  	end
+  end
 
+  private
   def comment_params
-    params.permit(:content)
+    params.permit(:content, :post_id)
   end
 end

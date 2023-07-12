@@ -30,15 +30,22 @@ class UserController < ApplicationController
 	def signup
     user = User.new(user_params)
     if user.save
-      # token = JsonWebToken.encode(user_id: @user.id)
       render json: { message: 'User Created Successfully '}, status: :created
     else
       render json: { error: user.error_messages }, status: :unprocessable_entity
     end
   end
 
-
-
+  def destroy
+  	user = User.find(params[:id])
+  	if user
+  		user.destroy
+  		render json: {message: "Destroy Successfully"}
+  	else
+  		render json: {error: "r "}
+  	end
+  end
+  
   private
 
   def user_params
