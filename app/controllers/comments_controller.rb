@@ -1,6 +1,14 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user
 
+  def index
+  	comment = Comment.all
+  	render json: comment
+  end
+
+  def show
+  end
+
   def create
     post = Post.find(params[:post_id])
     comment = post.comments.new(comment_params)

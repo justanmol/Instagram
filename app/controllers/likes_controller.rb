@@ -1,22 +1,26 @@
 class LikesController < ApplicationController
-  skip_before_action :authenticate_user, only: [:create]
+  before_action :authenticate_user, only: [:create]
+
+  def index
+  	like = Like.all
+  	render json: like
+  end
 
   def create
-  	# byebug
-  	post = Post.find_by(id: params[:post_id])
-  	if post.nil?
-  		render json: {message: 'No post with this ID'}
-  	else
-  		post.like += 1
-  		post.save
+  	post = Post.find(params[:id])
+  	if post
+  		likes = Like.new
+  		likes.post_id = post.id
+  		likes.save
   		render json: {message: "Liked Successful"}
+  	else
+  		render json: {message: 'No post with this ID'}
   	end
-
-	 end
+  end
   
 
   private
   	def like_params
-  		params.permit(:post_id, :user_id)
+  		params.permit(:post_id)
   	end
 end

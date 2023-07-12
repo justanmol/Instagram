@@ -1,7 +1,12 @@
-require 'byebug'
+# require 'byebug'
 class PostsController < ApplicationController
-  skip_before_action :authenticate_user, only: [:index]
+	before_action :authenticate_user
   
+ 	def index
+ 		post = Post.all
+ 		render json: post
+ 	end
+
   def create
     @post = @current_user.posts.new(post_params)
     @post.post.attach(params[:post])
@@ -19,7 +24,7 @@ class PostsController < ApplicationController
   		post.destroy
   		render json: {message: "Destroy Successfully"}
   	else
-  		render json: {error: "r "}
+  		render json: {error: "record not found"}
   	end
 	end
   private

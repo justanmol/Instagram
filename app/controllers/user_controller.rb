@@ -1,21 +1,6 @@
 class UserController < ApplicationController
 	skip_before_action :authenticate_user, only: [:login,:signup]
 
-	def index
- 		@posts = Post.all
-  	arr = []
-  	@posts.each do |i|
-  		h = Hash.new
-  		h[:user_id] = i.user_id
-  		h[:content] = i.content
-  		h[:post_id] = i.id
-  		h[:post] = i.post.url
-  		h[:like] = i.like
-
-  		arr.push(h)
-  	end
-  	render json: arr
-	end
 
 	def login
 		@user = User.find_by(email: params[:email], password_digest: params[:password_digest])
@@ -42,10 +27,10 @@ class UserController < ApplicationController
   		user.destroy
   		render json: {message: "Destroy Successfully"}
   	else
-  		render json: {error: "r "}
+  		render json: {error: "record not found"}
   	end
   end
-  
+
   private
 
   def user_params
