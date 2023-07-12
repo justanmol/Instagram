@@ -16,9 +16,9 @@ class CommentsController < ApplicationController
   	if comment
   		comment.destroy
   		render json: {message: "Destroy Successfully"}
-  	else
-  		render json: {error: "r "}
   	end
+  	rescue
+  		render json: {error: "record not found"}
   end
 
   private
