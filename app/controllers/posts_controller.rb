@@ -1,10 +1,17 @@
 # require 'byebug'
 class PostsController < ApplicationController
-	before_action :authenticate_user
+	before_action :authenticate_user!
+	before_action :set_post, only: [:show, :update, :destroy]
   
+ 	# def index
+ 	# 	post = Post.all
+ 	# 	render json: post
+ 	# end
+
  	def index
- 		post = Post.all
- 		render json: post
+ 		@user = current_user
+ 		@posts = @user.Posts
+ 		render json: @Posts
  	end
 
   def create
@@ -27,7 +34,14 @@ class PostsController < ApplicationController
   		render json: {error: "record not found"}
   	end
 	end
+  
   private
+
+  def set_post
+  	@post = current_user.posts.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+  	render json:{ error: 'Post not found' }, status: :not_found
+  end
 
   def post_params
     params.permit(:content, :post)

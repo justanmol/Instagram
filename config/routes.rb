@@ -3,9 +3,13 @@ Rails.application.routes.draw do
   post '/user/signup', to: 'user#signup'
   post '/like', to: 'likes#create'
 
-  resources :user
+  # resources :user
   resources :posts
-  resources :comments
-  resources :likes
-  
+  resources :comments, only: [:create, :destroy]
+  resources :likes, only: [:create, :destroy]
+  resources :user do
+    member do 
+      get 'posts'
+    end 
+  end   
 end

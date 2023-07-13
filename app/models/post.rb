@@ -1,8 +1,7 @@
 class Post < ApplicationRecord
   belongs_to :user
-  # belongs_to :comment
-  has_many :likes
-  has_many :comments
+  has_many :likes, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   validates :content, presence: true 
   validates :post, presence: true

@@ -1,7 +1,6 @@
 class UserController < ApplicationController
 	skip_before_action :authenticate_user, only: [:login,:signup]
 
-
 	def login
 		@user = User.find_by(email: params[:email], password_digest: params[:password_digest])
 		if @user
@@ -21,16 +20,43 @@ class UserController < ApplicationController
     end
   end
 
+  def follow
+  	@user = User.find(params[:id])
+  	current user.unfollow(@user)
+  	render json: { message: 'User followed successfully'}
+  end
+
+  def unfollow
+  	@user = User.find(params[:id])
+  	current_user.unfollow(@user)
+  	render json: { message: 'User unfollowed successfully'}
+  end
+
   def destroy
   	user = User.find(params[:id])
   	if user
   		user.destroy
   		render json: {message: "Destroy Successfully"}
   	else
-  		render json: {error: "record not found"}
+  		render json: {error: "Record not found"}
   	end
   end
-
+ 	
+ 	def posts
+ 		# byebug
+ 		user = User.find_by(id: params[:id])
+ 		if user.present?
+			post =  user.posts
+			if post.present?
+				render json: post
+			else
+				render json: {error: 'no post found'}
+			end
+		else
+ 			render json: {message: "No user found on this id"}
+ 		end
+ 	end
+  
   private
 
   def user_params
