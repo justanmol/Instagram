@@ -1,4 +1,7 @@
 class LikeSerializer < ActiveModel::Serializer
-  attributes :id
-  belongs_to :post
+  attributes :id, :post
+
+  def post
+    object.likeable_type
+  end
 end

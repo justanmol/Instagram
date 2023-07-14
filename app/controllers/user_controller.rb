@@ -22,14 +22,14 @@ class UserController < ApplicationController
 
   def follow
   	@user = User.find(params[:id])
-  	current user.unfollow(@user)
-  	render json: { message: 'User followed successfully'}
+  	current_user.followees << @user 
+  	head :no_content
   end
 
   def unfollow
   	@user = User.find(params[:id])
-  	current_user.unfollow(@user)
-  	render json: { message: 'User unfollowed successfully'}
+  	current_user.followees.delete(@user)
+  	head :no_content
   end
 
   def destroy

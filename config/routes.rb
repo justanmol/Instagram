@@ -5,11 +5,17 @@ Rails.application.routes.draw do
 
   # resources :user
   resources :posts
-  resources :comments, only: [:create, :destroy]
-  resources :likes, only: [:create, :destroy]
+  resources :comments
+  resources :likes, only: [:create, :destroy, :index]
   resources :user do
     member do 
       get 'posts'
-    end 
-  end   
+    end
+  end
+  resources :user do 
+    member do 
+      post '/follow', to: 'users#follow'
+      delete '/unfollow', to: 'users#unfollow'
+    end
+  end
 end

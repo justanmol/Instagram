@@ -1,6 +1,6 @@
 # require 'byebug'
 class PostsController < ApplicationController
-	before_action :authenticate_user!
+	before_action :authenticate_user
 	before_action :set_post, only: [:show, :update, :destroy]
   
  	# def index
@@ -8,10 +8,16 @@ class PostsController < ApplicationController
  	# 	render json: post
  	# end
 
+ 	# def index
+ 	# 	@user = current_user
+ 	# 	@posts = @user.Posts
+ 	# 	render json: @Posts
+ 	# end
+
  	def index
- 		@user = current_user
- 		@posts = @user.Posts
- 		render json: @Posts
+ 		followee_ids = current_user.followees.pluck(:id)
+ 		@posts = Post.where(user_id: followee_ids)
+ 		render json: @posts 
  	end
 
   def create
@@ -26,19 +32,27 @@ class PostsController < ApplicationController
   end
 
   def destroy
-  	post = Post.find(params[:id])
-  	if post
-  		post.destroy
+  	# post = @current_user.posts.find(params[:id])
+  	if @post
+  		@post.destroy
   		render json: {message: "Destroy Successfully"}
   	else
   		render json: {error: "record not found"}
   	end
 	end
+
+	def update
+		content = params[:content] ? params[:content] : @post.content
+		# content = params[:content] ? params[:content] : @post.content
+		 if @post.update(content: content)
+		 	render json: {message: "Post Updated"}
+		 end
+	end
   
   private
 
   def set_post
-  	@post = current_user.posts.find(params[:id])
+  	@post = @current_user.posts.find(params[:id])
   rescue ActiveRecord::RecordNotFound
   	render json:{ error: 'Post not found' }, status: :not_found
   end

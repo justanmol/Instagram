@@ -1,9 +1,9 @@
 class CommentsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user
   before_action :set_comment, only: [:update, :destroy]
   
   def create
-  	@comment = current_user.comments.build(comment_params)
+  	@comment = @current_user.comments.new(comment_params)
   	if @comment.save
   		render json: @comment, status: :created
   	else
@@ -11,22 +11,46 @@ class CommentsController < ApplicationController
   	end
   end
 
+  def update
+  	# byebug
+  	if @comment
+	  	# post = Post.where(id: params[:post_id])
+ 
+  	# if @comment
+  		@comment.update(comment_params)
+  		render json: @comment
+  	end
+  end
+
   def destroy
-  	@comment = current_user.comments.find(params[:id])
-  	@comment.destroy
-  	head :no_content
+  	# @comment = @current_user.comments.find(params[:id])
+  	if @comment.destroy
+  		render json: {message: "Comment Deleted"}
+  	else
+  		render json: {error: "Couldn't delete comment"}
+  	end
+  end
+
+  def index
+  	comments = @current_user.comments
+    if comments.empty?
+      render json:{error: "No Comment"}
+    else
+  	 render json: comments
+    end
   end
 
   private
 
   def set_comment
-  	@comment = current_user.comments.find(params[:id])
+  	# @comment = @current_user.comments.find(params[:id])
+  	@comment = Comment.find(params[:id])
   rescue ActiveRecord::RecordNotFound
   	render json: { error: 'Comment not found' }, status: :not_found
   end
 
   def comment_params
-  	params.require(:comment).permit(:post_id, :text)
+  	params.permit(:post_id, :content)
   end
 end
 

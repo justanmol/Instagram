@@ -1,34 +1,52 @@
 class LikesController < ApplicationController
-	before_action :authenticate_user!
-	before_action :set_like
+	before_action :authenticate_user
+	before_action :set_like, only:[:destroy]
 
 	def create
-		@like = current_user.likes.build(like_params)
-		if @like.save
-			render json: @like, status: :created 
+		prv_like = @current_user.likes.find_by(likeable_id: params[:like][:likeable_id], likeable_type: params[:like][:likeable_type])
+		if prv_like
+			render json: {error: "You Can't Like, because you've already done it"}
 		else
-			render json: @like.errors, status: :unprocessable_entity
+			@like = @current_user.likes.new(like_params)
+			if @like.save
+				render json: @like, status: :created 
+			else
+				render json: @like.errors, status: :unprocessable_entity
+			end
 		end
 	end
 	
-	def update
-		if @like.update(like_params)
-			render json: @like 
+	# def update
+	# 	if @like.update(like_params)
+	# 		render json: @like 
+	# 	else
+	# 		render json: @like.errors, status: :unprocessable_entity
+	# 	end
+	# end
+
+	def destroy
+		@like = @current_user.likes.find(params[:id])
+		if @like.destroy
+			render json: {message: "Like Deleted"}
 		else
-			render json: @like.errors, status: :unprocessable_entity
+			render json: {message: "Couldn't delete Like"}
 		end
 	end
 
-	def destroy
-		@like = current_user.likes.find(params[:id])
-		@like.destroy head :no_content
+	def index
+		likes = @current_user.likes
+		if likes.empty?
+			render json: {error: "No Likes"}
+		else
+			render json: likes
+		end
 	end
 
 	private
 
 	def set_like
-		@like = current_user.likes.find(params[:id])
-	rescue ActiveRecord::RecordNotFound
+		@like = @current_user.likes.find(params[:id])
+	rescue
 		render json: { error: 'like not found' }, status: :not_found
 	end
 
