@@ -16,13 +16,6 @@ class LikesController < ApplicationController
 		end
 	end
 	
-	# def update
-	# 	if @like.update(like_params)
-	# 		render json: @like 
-	# 	else
-	# 		render json: @like.errors, status: :unprocessable_entity
-	# 	end
-	# end
 
 	def destroy
 		@like = @current_user.likes.find(params[:id])

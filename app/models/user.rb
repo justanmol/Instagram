@@ -31,7 +31,7 @@ class User < ApplicationRecord
   # 	followed_users.include?(user)
   # end
 
-  def error_messages
-    errors.full_messages.to_sentence
-  end
+  # def error_messages
+  #   errors.full_messages.to_sentence
+  # end
 end

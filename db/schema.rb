@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_14_075107) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_15_104219) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -50,12 +50,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_14_075107) do
   end
 
   create_table "followings", force: :cascade do |t|
-    t.integer "follower_id", null: false
-    t.integer "followed_user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["followed_user_id"], name: "index_followings_on_followed_user_id"
-    t.index ["follower_id"], name: "index_followings_on_follower_id"
+    t.integer "follower_id"
+    t.integer "followee_id"
   end
 
   create_table "likes", force: :cascade do |t|
@@ -87,7 +85,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_14_075107) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "comments", "posts"
-  add_foreign_key "followings", "followed_users"
-  add_foreign_key "followings", "followers"
   add_foreign_key "posts", "users"
 end

@@ -12,10 +12,11 @@ Rails.application.routes.draw do
       get 'posts'
     end
   end
-  resources :user do 
-    member do 
-      post '/follow', to: 'users#follow'
-      delete '/unfollow', to: 'users#unfollow'
-    end
-  end
+  # resources :user 
+  #   # member do 
+  #   #   post '/follow', to: 'users#follow'
+  #   #   delete '/unfollow', to: 'users#unfollow'
+  #   # end
+  post '/follow', to: 'user#follow'
+  delete '/unfollow', to: 'user#unfollow'
 end

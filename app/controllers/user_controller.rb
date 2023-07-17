@@ -2,7 +2,7 @@ class UserController < ApplicationController
 	skip_before_action :authenticate_user, only: [:login,:signup]
 
 	def login
-		@user = User.find_by(email: params[:email], password_digest: params[:password_digest])
+		@user = User.find_by(email: params[:email], password_digest: params[:password])
 		if @user
 			token = jwt_encode(user_id: @user.id)
 			render json: {token: token}, status: :ok
@@ -21,15 +21,28 @@ class UserController < ApplicationController
   end
 
   def follow
-  	@user = User.find(params[:id])
-  	current_user.followees << @user 
-  	head :no_content
+  	# byebug
+  	user = User.find_by(params[:id])
+  	if @current_user.id == user.id
+  		render json: {error: 'you cannot follow'}
+  	else
+	  	following = Following.new(follower_id: @current_user.id, followee_id: user.id)
+	  	if following.save
+	  		render json: following
+	  	else
+	  		render json: {error: 'not followed'}
+	  	end
+	 end
   end
 
   def unfollow
-  	@user = User.find(params[:id])
-  	current_user.followees.delete(@user)
-  	head :no_content
+  	followee = Following.find_by(id:params[:id])
+  	if followee.present?
+	  	followee.destroy
+	  	render json: {error: 'Unfollow Successfully'}
+	  else
+	  	render json: {message: 'Please follow to unfollow'}
+	  end
   end
 
   def destroy
