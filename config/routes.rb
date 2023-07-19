@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   post '/user/login', to: 'user#login'
   post '/user/signup', to: 'user#signup'
   post '/like', to: 'likes#create'

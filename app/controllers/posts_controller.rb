@@ -1,21 +1,10 @@
 # require 'byebug'
-class PostsController < ApplicationController
+class PostsController < ApiController
 	before_action :authenticate_user
 	before_action :set_post, only: [:show, :update, :destroy]
-  
- 	# def index
- 	# 	post = Post.all
- 	# 	render json: post
- 	# end
-
- 	# def index
- 	# 	@user = current_user
- 	# 	@posts = @user.Posts
- 	# 	render json: @Posts
- 	# end
 
  	def index
- 		followee_ids = current_user.followees.pluck(:id)
+ 		followee_ids = @current_user.followees.pluck(:id)
  		@posts = Post.where(user_id: followee_ids)
  		render json: @posts 
  	end
@@ -53,8 +42,7 @@ class PostsController < ApplicationController
 
   def set_post
   	@post = @current_user.posts.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-  	render json:{ error: 'Post not found' }, status: :not_found
+  	render json:{ error: 'Post not found' }, status: :not_found if @user.nil?
   end
 
   def post_params

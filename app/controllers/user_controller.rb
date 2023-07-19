@@ -1,8 +1,9 @@
-class UserController < ApplicationController
+class UserController < ApiController
 	skip_before_action :authenticate_user, only: [:login,:signup]
+	before_action :set_user, only: [:posts, :destroy, :follow]
 
 	def login
-		@user = User.find_by(email: params[:email], password_digest: params[:password])
+		@user = User.find_by(user_params)
 		if @user
 			token = jwt_encode(user_id: @user.id)
 			render json: {token: token}, status: :ok
@@ -22,11 +23,11 @@ class UserController < ApplicationController
 
   def follow
   	# byebug
-  	user = User.find_by(params[:id])
-  	if @current_user.id == user.id
+  	# user = User.find_by(params[:id])
+  	if @current_user.id == @user.id
   		render json: {error: 'you cannot follow'}
   	else
-	  	following = Following.new(follower_id: @current_user.id, followee_id: user.id)
+	  	following = Following.new(follower_id: @current_user.id, followee_id: @user.id)
 	  	if following.save
 	  		render json: following
 	  	else
@@ -39,16 +40,15 @@ class UserController < ApplicationController
   	followee = Following.find_by(id:params[:id])
   	if followee.present?
 	  	followee.destroy
-	  	render json: {error: 'Unfollow Successfully'}
+	  	render json: {error: 'Unfollowed Successfully'}
 	  else
 	  	render json: {message: 'Please follow to unfollow'}
 	  end
   end
 
   def destroy
-  	user = User.find(params[:id])
-  	if user
-  		user.destroy
+  	if @user
+  		@user.destroy
   		render json: {message: "Destroy Successfully"}
   	else
   		render json: {error: "Record not found"}
@@ -57,9 +57,9 @@ class UserController < ApplicationController
  	
  	def posts
  		# byebug
- 		user = User.find_by(id: params[:id])
- 		if user.present?
-			post =  user.posts
+ 		if @user
+ 			@user.present?
+			post =  @user.posts
 			if post.present?
 				render json: post
 			else
@@ -75,5 +75,11 @@ class UserController < ApplicationController
   def user_params
     params.permit(:email, :password_digest)
   end
+
+  def set_user
+  	@user = User.find_by(id: params[:id])
+  	render json:{ error: 'User not found' }, status: :not_found if @user.nil?
+  end
+
 end
 

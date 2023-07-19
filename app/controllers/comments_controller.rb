@@ -1,4 +1,4 @@
-class CommentsController < ApplicationController
+class CommentsController < ApiController
   before_action :authenticate_user
   before_action :set_comment, only: [:update, :destroy]
   
@@ -45,8 +45,7 @@ class CommentsController < ApplicationController
   def set_comment
   	# @comment = @current_user.comments.find(params[:id])
   	@comment = Comment.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-  	render json: { error: 'Comment not found' }, status: :not_found
+    render json:{ error: 'Comment not found' }, status: :not_found if @user.nil?
   end
 
   def comment_params

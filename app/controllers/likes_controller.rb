@@ -1,4 +1,4 @@
-class LikesController < ApplicationController
+class LikesController < ApiController
 	before_action :authenticate_user
 	before_action :set_like, only:[:destroy]
 
@@ -39,8 +39,7 @@ class LikesController < ApplicationController
 
 	def set_like
 		@like = @current_user.likes.find(params[:id])
-	rescue
-		render json: { error: 'like not found' }, status: :not_found
+		render json:{ error: 'Like not found' }, status: :not_found if @user.nil?
 	end
 
 	def like_params
